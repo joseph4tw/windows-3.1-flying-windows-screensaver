@@ -18,6 +18,9 @@ scene.add(light);
 
 camera.position.z = 2;
 
+animate();
+window.addEventListener('resize', onWindowResize, false);
+
 function animate() {
   requestAnimationFrame(animate);
   camera.position.z -= 0.7;
@@ -31,23 +34,39 @@ function animate() {
   renderer.render(scene, camera);
 }
 
-animate();
-
 function createCubes(qty) {
-  const width = 1;
+  const width = 1.235;
   const height = 1;
-  const depth = 0.1;
+  const depth = 0.01;
 
   const geometry = new THREE.BoxGeometry(width, height, depth);
   const cubes = [];
 
+  const windowsImageMaterial = new THREE.MeshBasicMaterial({
+    map: loader.load('window-filter.png'),
+    transparent: true,
+    side: THREE.FrontSide
+  });
+
   for (let i = 0; i < qty; i++) {
     const color = getRandomColor();
-    const material = new THREE.MeshPhongMaterial({
+
+    const colorMaterial = new THREE.MeshPhongMaterial({
       color,
+      side: THREE.DoubleSide,
     });
-    const cube = new THREE.Mesh(geometry, material);
-    cube.position.z = -1 //* (Math.floor(Math.random() * 50) - 100);
+
+    const materials = [
+      colorMaterial,
+      colorMaterial,
+      colorMaterial,
+      colorMaterial,
+      windowsImageMaterial,
+      colorMaterial,
+    ];
+
+    const cube = new THREE.Mesh(geometry, materials);
+    cube.position.z = -1 * (Math.floor(Math.random() * 50) - 100);
     cube.position.x = Math.floor(Math.random() * 2 * Math.abs(cube.position.z)) + 0.7;
     cube.position.y = Math.floor(Math.random() * 2 * Math.abs(cube.position.z)) + 0.7;
 
@@ -80,7 +99,11 @@ function resetCube(cube, camera) {
   }
 
   const color = getRandomColor();
-  cube.material.color.setHex = color;
+  cube.material[0].color.setHex = color;
+  cube.material[1].color.setHex = color;
+  cube.material[2].color.setHex = color;
+  cube.material[3].color.setHex = color;
+  cube.material[5].color.setHex = color;
 }
 
 function createLight() {
@@ -89,4 +112,10 @@ function createLight() {
   const light = new THREE.DirectionalLight(color, intensity);
   light.position.set(-1, 2, 4);
   return light;
+}
+
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
