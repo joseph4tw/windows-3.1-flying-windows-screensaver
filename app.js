@@ -106,7 +106,7 @@ function resetFlyingWindow(flyingWindow, camera) {
     flyingWindow.position.y *= -1;
   }
 
-  // reset the color with each reset
+  // reset the color with each reset (and leave the face with the Windows logo alone)
   const color = getRandomColor();
   flyingWindow.material[0].color.setHex = color;
   flyingWindow.material[1].color.setHex = color;
