@@ -56,7 +56,7 @@ function createFlyingWindows(qty) {
   });
 
   for (let i = 0; i < qty; i++) {
-    const color = 0xffffff;
+    const color = getRandomColor();
 
     // put color on both sides so transparent front can show color from inside box
     const colorMaterial = new THREE.MeshBasicMaterial({
