@@ -24,7 +24,7 @@ function animate() {
 
   flyingWindows.forEach(flyingWindow => {
     if (camera.position.z < flyingWindow.position.z) {
-      resetFlyingWindow(flyingWindow, camera);
+      randomlyPositionFlyingWindow(flyingWindow, camera);
     }
   });
 
@@ -44,45 +44,37 @@ function createFlyingWindows(qty) {
   const windowImageMaterial = new THREE.MeshBasicMaterial({
     map: loader.load('window-filter.png'),
     transparent: true,
-    side: THREE.FrontSide
+    side: THREE.FrontSide,
+  });
+
+  const blackMaterial = new THREE.MeshBasicMaterial({
+    color: 0x000000,
+    side: THREE.DoubleSide,
+    polygonOffset: true,
+    polygonOffsetFactor: -1,
+    polygonOffsetUnits: 1,
   });
 
   for (let i = 0; i < qty; i++) {
-    const color = getRandomColor();
+    const color = 0xffffff;
 
     // put color on both sides so transparent front can show color from inside box
     const colorMaterial = new THREE.MeshBasicMaterial({
       color,
-      side: THREE.DoubleSide,
+      side: THREE.BackSide,
     });
 
     const materials = [
-      colorMaterial,
-      colorMaterial,
-      colorMaterial,
-      colorMaterial,
+      blackMaterial,
+      blackMaterial,
+      blackMaterial,
+      blackMaterial,
       windowImageMaterial, // side facing camera
-      colorMaterial,
+      colorMaterial,       // back inside facing camera
     ];
 
     const flyingWindow = new THREE.Mesh(geometry, materials);
-
-    // randomly position z away from camera
-    flyingWindow.position.z = -1 * (Math.floor(Math.random() * 50) - 100);
-
-    // based on how far away the flyingWindow is, push its X and Y position
-    // add 0.7 at the end to keep it away from the Z axis slightly
-    flyingWindow.position.x = Math.floor(Math.random() * 2 * Math.abs(flyingWindow.position.z)) + 0.7;
-    flyingWindow.position.y = Math.floor(Math.random() * 2 * Math.abs(flyingWindow.position.z)) + 0.7;
-
-    // randomly place it in one of the 4 quadrants
-    if (Math.random() > 0.5) {
-      flyingWindow.position.x *= -1;
-    }
-
-    if (Math.random() > 0.5) {
-      flyingWindow.position.y *= -1;
-    }
+    randomlyPositionFlyingWindow(flyingWindow, camera);
 
     flyingWindows.push(flyingWindow);
   }
@@ -90,13 +82,16 @@ function createFlyingWindows(qty) {
   return flyingWindows;
 }
 
-function resetFlyingWindow(flyingWindow, camera) {
+function randomlyPositionFlyingWindow(flyingWindow, camera) {
   // perform the same thing we did when we first set the flying windows, except this
   // time use the camera's z position to determine where to place them on the z axis
   flyingWindow.position.z = camera.position.z - Math.floor(Math.random() * 50) - 100;
   const distance = Math.abs(camera.position.z - flyingWindow.position.z);
-  flyingWindow.position.x = Math.floor(Math.random() * (2 + distance / 2)) + 0.7;
-  flyingWindow.position.y = Math.floor(Math.random() * (2 + distance / 2)) + 0.7;
+
+  // based on how far away the flyingWindow is, push its X and Y position
+  // add a little bit at the end to keep it away from the center slightly
+  flyingWindow.position.x = Math.floor(Math.random() * (2 + distance / 2)) + 0.5;
+  flyingWindow.position.y = Math.floor(Math.random() * (2 + distance / 2)) + 0.5;
 
   if (Math.random() > 0.5) {
     flyingWindow.position.x *= -1;
