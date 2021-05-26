@@ -83,15 +83,14 @@ function createFlyingWindows(qty) {
 }
 
 function randomlyPositionFlyingWindow(flyingWindow, camera) {
-  // perform the same thing we did when we first set the flying windows, except this
-  // time use the camera's z position to determine where to place them on the z axis
+  // use the camera's z position to determine where to place them on the z axis
   flyingWindow.position.z = camera.position.z - Math.floor(Math.random() * 50) - 100;
   const distance = Math.abs(camera.position.z - flyingWindow.position.z);
 
   // based on how far away the flyingWindow is, push its X and Y position
   // add a little bit at the end to keep it away from the center slightly
-  flyingWindow.position.x = Math.floor(Math.random() * (2 + distance / 2)) + 0.5;
-  flyingWindow.position.y = Math.floor(Math.random() * (2 + distance / 2)) + 0.5;
+  flyingWindow.position.x = Math.floor(Math.random() * (distance / 3)) + 0.5;
+  flyingWindow.position.y = Math.floor(Math.random() * (distance / 3)) + 0.5;
 
   if (Math.random() > 0.5) {
     flyingWindow.position.x *= -1;
